@@ -53,13 +53,23 @@ Revesz</a> to demonstrate an algorithm for QE. Revesz shows
 quantifier elimination for a slightly more general theory,<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup> one
 that allows for inequality constraints with the empty set, but we won&rsquo;t need
 that here. First, I&rsquo;ll write a general form for all possible existentially
-quantified formulas in our theory.</p><p>Here $y$, $z$, $u$, and $v$ are collections of region variables distinct from
+quantified formulas in our theory.</p><p>\begin{align*}
+\exists x (
+&y_1 \sub x, \dots, y_m \sub x,    \\
+&x \sub z_1, \dots, x \sub z_n,    \\
+&u_1 \sub v_1, \dots, u_s \sub v_s)
+\end{align*}</p><p>Here $y$, $z$, $u$, and $v$ are collections of region variables distinct from
 the existentially quantified variable $x$ but not necessarily from each other.
 $y$ is a series of lower bounds on $x$, $z$ is a series of upper bounds, and
 $u$ and $v$ are unrelated constraints.</p><p>Because $u$ and $v$ have no relation to $x$, we can move them outside of the
 scope of the existential quantifier and ignore them for now. We&rsquo;ll rewrite the
 remaining constraints as a single upper and lower bound on $x$ using the
-following lattice identities for sets:</p><p>By applying these identities repeatedly to the lower and upper bounds, we can
+following lattice identities for sets:</p><p>\begin{equation}
+b \sub a \land c \sub a \iff (b \cup c) \sub a
+\end{equation}
+\begin{equation}
+a \sub b \land a \sub c \iff a \sub (b \cap c)
+\end{equation}</p><p>By applying these identities repeatedly to the lower and upper bounds, we can
 express our existential quantifier as a single pair of subset constraints, one
 on the union of the lower bounds and another on the intersection of the uppers.</p><p>$$
 \exists x (\bigcup\limits_{i=1}^{m} y_i \sub x, x \sub \bigcap\limits_{j=1}^{n} z_j)
@@ -69,8 +79,31 @@ upper bounds or the union of the lower bounds respectively. Otherwise, we can
 eliminate the quantified variable by applying the transitive property
 of the subset operator ($(a \sub b) \land (b \sub c) \implies a \sub c$) and
 then apply lattice identities $(1)$ and $(2)$ in reverse to get an equivalent
-formula containing only subset constraints.</p><p>We&rsquo;ll add our unrelated constraints back in to get our final result, an
-equivalent quantifier free formula for any existentially quantified one:</p><h2 id=universal-quantification>Universal quantification</h2><p>If our theory had logical negation ($\neg$) as well as existential QE, we could
+formula containing only subset constraints.</p><p>\begin{align*}
+\exists x (\bigcup\limits_{i=1}^{m} y_i \sub x, x \sub \bigcap\limits_{j=1}^{n} z_j)
+&\iff \bigcup\limits_{i=1}^{m} y_i \sub \bigcap\limits_{j=1}^{n} z_j \\
+&\iff y_1 \sub \bigcap\limits_{j=1}^{n} z_j, \dots, y_m \sub \bigcap\limits_{j=1}^{n} z_j \\
+&\iff \begin{array}{ccc}
+y_1 \sub z_1, & \dots, & y_1 \sub z_n, \\
+\vdots & \ddots & \vdots \\
+y_m \sub z_1, & \dots, & y_m \sub z_n \\
+\end{array}
+\end{align*}</p><p>We&rsquo;ll add our unrelated constraints back in to get our final result, an
+equivalent quantifier free formula for any existentially quantified one:</p><p>\begin{align*}
+\begin{alignat*}{2}
+\exists x (
+&y_1 \sub x, \dots, y_m \sub x,    \\
+&x \sub z_1, \dots, x \sub z_n,    \\
+&u_1 \sub v_1, \dots, u_s \sub v_s)
+\end{alignat*}
+\iff
+\begin{array}{ccc}
+y_1 \sub z_1, & \dots, & y_1 \sub z_n, \\
+    \vdots & \ddots & \vdots \\
+    y_m \sub z_1, & \dots, & y_m \sub z_n, \\
+    u_1 \sub v_1, & \dots, & u_s \sub v_s
+\end{array}
+\end{align*}</p><h2 id=universal-quantification>Universal quantification</h2><p>If our theory had logical negation ($\neg$) as well as existential QE, we could
 stop here. It would be straightforward to eliminate universal quantifiers
 ($\forall$) by using the following identity to transform them into existential
 ones.</p><p>$$
@@ -92,7 +125,10 @@ equivalently $y = \empty$. The resulting constraint is both necessary ($\empty$
 is a valid region), and sufficient ($\forall x (\empty \sub x)$) for the
 original formula to hold and is therefore equivalent.</p><p>Universal quantification distributes over conjunction, so we can apply this
 transformation across multiple constraints to obtain a universal QE algorithm for
-conjunctions of subset constraints.</p><p>Remember, we only need to handle lower bounds on the existential: any upper
+conjunctions of subset constraints.</p><p>\begin{align*}
+\forall x (y_1 \sub x, \dots, y_n \sub x) &\iff \forall x (y_1 \sub x), \dots, \forall x (y_n \sub x) \\
+&\iff y_1 \sub \empty, \dots, y_n \sub \empty
+\end{align*}</p><p>Remember, we only need to handle lower bounds on the existential: any upper
 bound would make the entire formula unsatisfiable.</p><h2 id=putting-it-all-together>Putting it all together</h2><p>By repeatedly applying these QE algorithms to the innermost quantifier, we can
 simplify arbitrarily complex quantified formulae to equivalent unquantified
 ones, emit an error if any of them are unsatisfiable and pass the resulting
@@ -101,7 +137,11 @@ placeholder region errors laid out on <a href=https://smallcultfollowing.com/bab
 should be enough to handle any lifetime constraint that can be expressed in
 Rust.</p><p>Let&rsquo;s try out a few test cases just to be sure. We&rsquo;ll start with the example
 <code>forall&lt;'x, 'y> { 'x: 'y }</code> from Niko&rsquo;s blog. Our algorithm would show this to
-be unsatisfiable by the following process:</p><p>We begin by processing the innermost quantifier, which has $x$ as a lower bound
+be unsatisfiable by the following process:</p><p>\begin{align*}
+\forall x \forall y (x \sub y)
+&\implies \forall x (x \sub \empty) \\
+&\implies \bot
+\end{align*}</p><p>We begin by processing the innermost quantifier, which has $x$ as a lower bound
 on the quantified variable $y$. This can be reduced to the constraint $x \sub
 \empty$ via the algorithm for universal QE. But when we evaluate the second
 quantifier, we see an upper bound on the quantified variable $x$, so this

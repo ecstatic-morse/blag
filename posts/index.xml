@@ -66,7 +66,14 @@ quantifier elimination for a slightly more general theory,&lt;sup id="fnref:5">&
 that allows for inequality constraints with the empty set, but we won&amp;rsquo;t need
 that here. First, I&amp;rsquo;ll write a general form for all possible existentially
 quantified formulas in our theory.&lt;/p>
-&lt;!-- raw HTML omitted -->
+&lt;p>
+\begin{align*}
+\exists x (
+&amp;y_1 \sub x, \dots, y_m \sub x, \\
+&amp;x \sub z_1, \dots, x \sub z_n, \\
+&amp;u_1 \sub v_1, \dots, u_s \sub v_s)
+\end{align*}
+&lt;/p>
 &lt;p>Here $y$, $z$, $u$, and $v$ are collections of region variables distinct from
 the existentially quantified variable $x$ but not necessarily from each other.
 $y$ is a series of lower bounds on $x$, $z$ is a series of upper bounds, and
@@ -75,7 +82,14 @@ $u$ and $v$ are unrelated constraints.&lt;/p>
 scope of the existential quantifier and ignore them for now. We&amp;rsquo;ll rewrite the
 remaining constraints as a single upper and lower bound on $x$ using the
 following lattice identities for sets:&lt;/p>
-&lt;!-- raw HTML omitted -->
+&lt;p>
+\begin{equation}
+b \sub a \land c \sub a \iff (b \cup c) \sub a
+\end{equation}
+\begin{equation}
+a \sub b \land a \sub c \iff a \sub (b \cap c)
+\end{equation}
+&lt;/p>
 &lt;p>By applying these identities repeatedly to the lower and upper bounds, we can
 express our existential quantifier as a single pair of subset constraints, one
 on the union of the lower bounds and another on the intersection of the uppers.&lt;/p>
@@ -89,10 +103,37 @@ eliminate the quantified variable by applying the transitive property
 of the subset operator ($(a \sub b) \land (b \sub c) \implies a \sub c$) and
 then apply lattice identities $(1)$ and $(2)$ in reverse to get an equivalent
 formula containing only subset constraints.&lt;/p>
-&lt;!-- raw HTML omitted -->
+&lt;p>
+\begin{align*}
+\exists x (\bigcup\limits_{i=1}^{m} y_i \sub x, x \sub \bigcap\limits_{j=1}^{n} z_j)
+&amp;\iff \bigcup\limits_{i=1}^{m} y_i \sub \bigcap\limits_{j=1}^{n} z_j \\
+&amp;\iff y_1 \sub \bigcap\limits_{j=1}^{n} z_j, \dots, y_m \sub \bigcap\limits_{j=1}^{n} z_j \\
+&amp;\iff \begin{array}{ccc}
+y_1 \sub z_1, &amp; \dots, &amp; y_1 \sub z_n, \\
+\vdots &amp; \ddots &amp; \vdots \\
+y_m \sub z_1, &amp; \dots, &amp; y_m \sub z_n \\
+\end{array}
+\end{align*}
+&lt;/p>
 &lt;p>We&amp;rsquo;ll add our unrelated constraints back in to get our final result, an
 equivalent quantifier free formula for any existentially quantified one:&lt;/p>
-&lt;!-- raw HTML omitted -->
+&lt;p>
+\begin{align*}
+\begin{alignat*}{2}
+\exists x (
+&amp;y_1 \sub x, \dots, y_m \sub x, \\
+&amp;x \sub z_1, \dots, x \sub z_n, \\
+&amp;u_1 \sub v_1, \dots, u_s \sub v_s)
+\end{alignat*}
+\iff
+\begin{array}{ccc}
+y_1 \sub z_1, &amp; \dots, &amp; y_1 \sub z_n, \\
+\vdots &amp; \ddots &amp; \vdots \\
+y_m \sub z_1, &amp; \dots, &amp; y_m \sub z_n, \\
+u_1 \sub v_1, &amp; \dots, &amp; u_s \sub v_s
+\end{array}
+\end{align*}
+&lt;/p>
 &lt;h2 id="universal-quantification">Universal quantification&lt;/h2>
 &lt;p>If our theory had logical negation ($\neg$) as well as existential QE, we could
 stop here. It would be straightforward to eliminate universal quantifiers
@@ -126,7 +167,12 @@ original formula to hold and is therefore equivalent.&lt;/p>
 &lt;p>Universal quantification distributes over conjunction, so we can apply this
 transformation across multiple constraints to obtain a universal QE algorithm for
 conjunctions of subset constraints.&lt;/p>
-&lt;!-- raw HTML omitted -->
+&lt;p>
+\begin{align*}
+\forall x (y_1 \sub x, \dots, y_n \sub x) &amp;\iff \forall x (y_1 \sub x), \dots, \forall x (y_n \sub x) \\
+&amp;\iff y_1 \sub \empty, \dots, y_n \sub \empty
+\end{align*}
+&lt;/p>
 &lt;p>Remember, we only need to handle lower bounds on the existential: any upper
 bound would make the entire formula unsatisfiable.&lt;/p>
 &lt;h2 id="putting-it-all-together">Putting it all together&lt;/h2>
@@ -140,7 +186,13 @@ Rust.&lt;/p>
 &lt;p>Let&amp;rsquo;s try out a few test cases just to be sure. We&amp;rsquo;ll start with the example
 &lt;code>forall&amp;lt;'x, 'y&amp;gt; { 'x: 'y }&lt;/code> from Niko&amp;rsquo;s blog. Our algorithm would show this to
 be unsatisfiable by the following process:&lt;/p>
-&lt;!-- raw HTML omitted -->
+&lt;p>
+\begin{align*}
+\forall x \forall y (x \sub y)
+&amp;\implies \forall x (x \sub \empty) \\
+&amp;\implies \bot
+\end{align*}
+&lt;/p>
 &lt;p>We begin by processing the innermost quantifier, which has $x$ as a lower bound
 on the quantified variable $y$. This can be reduced to the constraint $x \sub
 \empty$ via the algorithm for universal QE. But when we evaluate the second
