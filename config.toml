@@ -1,0 +1,8 @@
+baseURL = "http://ecstaticmorse.net/"
+languageCode = "en-us"
+title = "ecstaticmorse"
+theme = "anubis"
+enableRobotsTXT = true
+
+[params]
+author = "Dylan MacKenzie"
