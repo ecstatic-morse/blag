@@ -1,0 +1,171 @@
+<!doctype html><html lang=en-us data-theme><head><meta charset=utf-8><meta name=HandheldFriendly content="True"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>Polonius and the Secret of the Eliminated Quantifier - ecstaticmorse</title><meta name=description content><link rel=icon type=image/x-icon href=http://ecstaticmorse.net/favicon.ico><link rel=apple-touch-icon-precomposed href=http://ecstaticmorse.net/favicon.png><link rel=stylesheet href=http://ecstaticmorse.net/css/style.cd267f2711fc8d550fa9b9004cd2dca13ae71d0b7af4aecb3c92e1e617996bef.css integrity="sha256-zSZ/JxH8jVUPqbkATNLcoTrnHQt69K7LPJLh5heZa+8="><meta property="og:title" content="Polonius and the Secret of the Eliminated Quantifier"><meta property="og:description" content="A possible solution to Polonius' higher-rank trait bound problem."><meta property="og:type" content="article"><meta property="og:url" content="http://ecstaticmorse.net/posts/quantifier-elimination/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-03-25T16:37:41-07:00"><meta property="article:modified_time" content="2021-03-25T16:37:41-07:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Polonius and the Secret of the Eliminated Quantifier"><meta name=twitter:description content="A possible solution to Polonius' higher-rank trait bound problem."><style>code:not([class^=language]){background-color:#f1f1f1;padding:.1em .3em;border-radius:3px}li[id^="fn:"]:target{background-color:#eaf3ff}section.footnotes{margin-top:2em}</style><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css integrity=sha384-t5CR+zwDAROtph0PXGte6ia8heboACF9R5l/DiY+WZ3P2lxNgvJkQk5n7GPvLMYw crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js integrity=sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8+w2LAIftJEULZABrF9PPFv+tVkH crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js integrity=sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB+w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v crossorigin=anonymous></script><script>var macros={"\\sub":"\\subseteq","\\sup":"\\supseteq"},delimiters=[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\begin{equation}",right:"\\end{equation}",display:!0},{left:"\\begin{align}",right:"\\end{align}",display:!0},{left:"\\begin{align*}",right:"\\end{align*}",display:!0},{left:"\\begin{alignat}",right:"\\end{alignat}",display:!0},{left:"\\begin{gather}",right:"\\end{gather}",display:!0},{left:"\\begin{gather*}",right:"\\end{gather*}",display:!0},{left:"\\begin{CD}",right:"\\end{CD}",display:!0},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}];document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters,macros,fleqn:!0})})</script></head><body><a class=skip-main href=#main>Skip to main content</a><div class=container><header class=common-header><h1 class=site-title><a href=/>ecstaticmorse</a></h1><nav></nav></header><main id=main tabindex=-1><article class="post h-entry"><header class=post-header><h1 class="p-name post-title">Polonius and the Secret of the Eliminated Quantifier</h1></header><div class="content e-content"><p>I&rsquo;ve long been intrigued by <a href=https://github.com/rust-lang/polonius>Polonius</a>, an improved formulation of the borrow
+checker inspired by more traditional alias analyses.
+The algorithm that became Polonius was first described by Niko Matsakis in <a href=http://smallcultfollowing.com/babysteps/blog/2018/04/27/an-alias-based-formulation-of-the-borrow-checker>&ldquo;An
+alias-based formulation of the borrow checker&rdquo;</a>, and has since
+been implemented <a href=https://github.com/rust-lang/polonius>out-of-tree</a>.</p><p>The project is currently on hiatus, however, and resumption does not seem
+imminent. One roadblock is Polonius' inability to reason about <a href=https://doc.rust-lang.org/nomicon/hrtb.html>higher-rank
+trait bounds (HRTBs)</a>. It&rsquo;s pretty rare for users to encounter
+these, but they&rsquo;re an integral part of the language that appear when desugaring
+some <code>Fn</code> trait bounds. This shortcoming was <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/21/hereditary-harrop-region-constraints/>described in detail</a> on
+Niko&rsquo;s blog over 2 years ago in his last post on Polonius. I suggest reading
+that post&rsquo;s immediate predecessor, <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/17/polonius-and-region-errors/>a more general discussion of placeholder
+region errors</a>, as well.</p><p>As far as I know, there is no accepted solution to these problems. This post
+will explore one possibility, an algorithm for quantifier elimination in a
+fragment of first-order logic on partially ordered sets. The idea (if not the
+nomenclature) is pretty simple, but I haven&rsquo;t seen it discussed in any of the
+usual forums.<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> This is somewhat surprising, since it appears to solve
+the problems around HRTBs in a straightforward manner.</p><h2 id=quantifier-elimination>Quantifier elimination</h2><p>In formal logic, the process of rewriting a formula that includes quantifiers
+into an equivalent one without them is known as <a href=https://mathworld.wolfram.com/QuantifierElimination.html>quantifier elimination</a>
+(QE). Certain theories are said to have QE, which means that all formulas can
+be rewritten this way, while others do not. For example, the real numbers with
+addition, multiplication, equality, and strict ordering have QE,<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup> but not
+the integers with the same operators. If you disallow multiplication between
+integer variables, however, you get <a href=https://en.wikipedia.org/wiki/Presburger_arithmetic>Presburger arithmetic</a>, which <em>does</em>
+allow for QE.</p><p>Our goal, then, is to find a QE algorithm for the &ldquo;theory&rdquo; of placeholder
+regions used by Polonius. Clearly, this will depend on both the domain of our
+theory (regions), as well as the operations allowed on those regions.</p><h2 id=regions-are-sets-of-loans>Regions are sets of loans</h2><p>Niko&rsquo;s blog posts lay out the requirements for Polonius' placeholder region
+logic. As he explains it, &ldquo;regions are sets of loans&rdquo;, so our domain is that of
+sets. Placeholder regions are somewhat different than the sets of loans that
+appear when checking function bodies. Inside a function, there is a finite
+number of loans, each corresponding to a borrow (<code>&</code> or <code>&mut</code>) in the source.
+However, placeholder regions are more abstract in some sense; relationships
+between placeholder regions in a function signature subset relationships must
+hold for all possible callers of that function. Therefore, we will treat
+placeholder regions as if they may contain infinitely many loans,
+the set of all possible loans that can be created in all possible Rust
+programs.<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup></p><p>Sets, when ordered by inclusion, are an example of a common algebraic structure
+called a <a href=https://en.wikipedia.org/wiki/Partially_ordered_set>partially-ordered set or poset</a>. If we extend our regions with
+the canonical set operators&mdash;union ($\cup$) and intersection ($\cap$)&mdash;they
+form a <a href=https://en.wikipedia.org/wiki/Lattice_(order)>lattice</a>. Lattices are another common algebraic structure, and we
+will use results from both lattices and posets to develop our QE algorithm. Our
+lattice has a global lower bound, the empty set ($\empty$), but because it is
+infinite it has no global upper bound. As Niko&rsquo;s posts explain, this global
+lower bound corresponds to the special <code>'static</code> lifetime in Rust.<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup></p><p>The fundamental operation on these sets is the subset relation
+($\sub$), which requires that the loans in one region also be present in
+another. We are allowed to have many of these relations, all of
+which must hold. This is logical conjunction ($\land$, sometimes abbreviated
+with a comma).</p><p>And&mldr;That&rsquo;s it! You can combine these operators to express, for example,
+equality between regions ($a \sub b \land b \sub a \implies a = b$), but these
+primitives are all that&rsquo;s required to express most placeholder region
+constraints. This is the logic we will extend with quantification.</p><h2 id=existential-quantification>Existential quantification</h2><p>With that out of the way, it&rsquo;s time to add existential quantification ($\exists
+x$) to the mix. I&rsquo;ll use the approach from Lemma 2.4 in <a href=http://cse.unl.edu/~revesz/papers/IJAC98.pdf>this paper by Peter
+Revesz</a> to demonstrate an algorithm for QE. Revesz shows
+quantifier elimination for a slightly more general theory,<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup> one
+that allows for inequality constraints with the empty set, but we won&rsquo;t need
+that here. First, I&rsquo;ll write a general form for all possible existentially
+quantified formulas in our theory.</p><p>Here $y$, $z$, $u$, and $v$ are collections of region variables distinct from
+the existentially quantified variable $x$ but not necessarily from each other.
+$y$ is a series of lower bounds on $x$, $z$ is a series of upper bounds, and
+$u$ and $v$ are unrelated constraints.</p><p>Because $u$ and $v$ have no relation to $x$, we can move them outside of the
+scope of the existential quantifier and ignore them for now. We&rsquo;ll rewrite the
+remaining constraints as a single upper and lower bound on $x$ using the
+following lattice identities for sets:</p><p>By applying these identities repeatedly to the lower and upper bounds, we can
+express our existential quantifier as a single pair of subset constraints, one
+on the union of the lower bounds and another on the intersection of the uppers.</p><p>$$
+\exists x (\bigcup\limits_{i=1}^{m} y_i \sub x, x \sub \bigcap\limits_{j=1}^{n} z_j)
+$$</p><p>If either $y$ or $z$ are empty&mdash;i.e., there are no upper (or lower) bounds&mdash;the
+formula is trivially satisfiable by setting $x$ to the intersection of the
+upper bounds or the union of the lower bounds respectively. Otherwise, we can
+eliminate the quantified variable by applying the transitive property
+of the subset operator ($(a \sub b) \land (b \sub c) \implies a \sub c$) and
+then apply lattice identities $(1)$ and $(2)$ in reverse to get an equivalent
+formula containing only subset constraints.</p><p>We&rsquo;ll add our unrelated constraints back in to get our final result, an
+equivalent quantifier free formula for any existentially quantified one:</p><h2 id=universal-quantification>Universal quantification</h2><p>If our theory had logical negation ($\neg$) as well as existential QE, we could
+stop here. It would be straightforward to eliminate universal quantifiers
+($\forall$) by using the following identity to transform them into existential
+ones.</p><p>$$
+\forall x P(x) \implies \neg (\exists x \neg P(x))
+$$</p><p>Unfortunately, our theory does not permit logical negation. In fact, as I&rsquo;ll
+describe later, it cannot as long as we want QE. Luckily, due to the limits
+we&rsquo;ve imposed, we can construct a separate algorithm for eliminating universal
+quantifiers. We will take the same approach as for existential quantifiers by
+splitting the bounds on a quantified variable into upper and lower ones and
+considering them separately.</p><h3 id=upper-bounds>Upper bounds</h3><p>Upper bounds on universally quantified variables are never satisfiable. For
+example, if we have a constraint like $\forall x (x \sub z)$ for some free
+region $z$, we can always find a loan $L$ such that $L \notin z$ because the
+set of loans is infinite. The set $\{ L \} \cup z$ provides a counterexample
+to our quantified formula, so any universally quantified formula with an upper
+bound on the quantified variable is unsatisfiable ($\bot$).</p><h3 id=lower-bounds>Lower bounds</h3><p>Lower bounds, however, <em>are</em> satisfiable due to the existence of a global lower
+bound for regions. This is $\empty$ or, as we discussed earlier, <code>'static</code>.
+Given a constraint such as the following,</p><p>$$\forall x (y \sub x)$$</p><p>we can substitute $\empty$ for $x$ to obtain the constraint $y \sub \empty$ or
+equivalently $y = \empty$. The resulting constraint is both necessary ($\empty$
+is a valid region), and sufficient ($\forall x (\empty \sub x)$) for the
+original formula to hold and is therefore equivalent.</p><p>Universal quantification distributes over conjunction, so we can apply this
+transformation across multiple constraints to obtain a universal QE algorithm for
+conjunctions of subset constraints.</p><p>Remember, we only need to handle lower bounds on the existential: any upper
+bound would make the entire formula unsatisfiable.</p><h2 id=putting-it-all-together>Putting it all together</h2><p>By repeatedly applying these QE algorithms to the innermost quantifier, we can
+simplify arbitrarily complex quantified formulae to equivalent unquantified
+ones, emit an error if any of them are unsatisfiable and pass the resulting
+constraints to Polonius. Coupled with one of the approaches to emitting
+placeholder region errors laid out on <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/17/polonius-and-region-errors/>Niko&rsquo;s blog</a>, this
+should be enough to handle any lifetime constraint that can be expressed in
+Rust.</p><p>Let&rsquo;s try out a few test cases just to be sure. We&rsquo;ll start with the example
+<code>forall&lt;'x, 'y> { 'x: 'y }</code> from Niko&rsquo;s blog. Our algorithm would show this to
+be unsatisfiable by the following process:</p><p>We begin by processing the innermost quantifier, which has $x$ as a lower bound
+on the quantified variable $y$. This can be reduced to the constraint $x \sub
+\empty$ via the algorithm for universal QE. But when we evaluate the second
+quantifier, we see an upper bound on the quantified variable $x$, so this
+formula is false.</p><p>Another interesting example comes from <a href=https://github.com/rust-lang/rust/pull/65232>rust-lang/rust#65232</a>:</p><p>$$
+\exists a \forall b (b \sub a) \implies \bot
+$$</p><p>The existing placeholder region logic needs a special-case to handle this type
+of formula.<sup id=fnref:6><a href=#fn:6 class=footnote-ref role=doc-noteref>6</a></sup> This is because formulations of the borrow checker
+based on program locations contain both a global upper bound (<code>'static</code>, all
+possible program locations) and a global lower bound (the <a href=https://doc.rust-lang.org/stable/nightly-rustc/rustc_middle/ty/sty/enum.RegionKind.html#variant.ReEmpty>empty
+region</a>). While the former is a valid solution to a constraint
+problem, the latter results in an error. The process is more elegant in our new
+system based on sets of loans, which does not have a global upper bound; the
+innermost quantifier is trivially false.</p><h2 id=negation-disjunction-and-implication>Negation, disjunction, and implication</h2><p>It&rsquo;s not all sunshine and roses, though. In the framework I&rsquo;ve described above,
+the presence of QE is mutually exclusive with logical negation.
+Logical negation would allow us to express a <strong>strict</strong> subset relation ($\neg
+(b \sub a) \to a \subset b$), as well as inequality constraints between
+arbitrary regions. To see why this is problematic, consider the following
+formula.</p><p>$$
+\exists x (a \subset x \land x \subset b)
+$$</p><p>It may look like we can eliminate $x$ via the transitive property as we did
+above, resulting in a similar constraint $a \subset b$. However, this does not
+hold when $b$ has exactly one more element than $a$. There&rsquo;s no &ldquo;room&rdquo; between
+$a$ and $b$ to fit an extra element, so the formula is unsatisfiable in that
+case. In reality, we would need an additional constraint on the cardinality of
+$a$ and $b$:</p><p>$$
+\exists x (a \subset x \land x \subset b)
+\implies (a \subset b) \land (|b| - |a| > 1)
+$$</p><p>Surprisingly, if we extend our theory with these so-called &ldquo;cardinality
+constraints&rdquo;, it does have QE.<sup id=fnref:7><a href=#fn:7 class=footnote-ref role=doc-noteref>7</a></sup> But these constraints, which have
+no analogue in Rust, would leak into the borrow-checking parts of Polonius
+where I have no idea how to handle them.</p><p>Unfortunately, without negation we cannot have implication, one of
+Niko&rsquo;s hereditary Harrop clauses. Implication reduces to a combination of
+negation and disjunction and would therefore require both of these extensions.</p><p>$$
+(P \to Q) \iff (\neg P \lor Q)
+$$</p><p>I&rsquo;m somewhat more hopeful about incorporating disjunction ($\lor$) into
+Polonius, although I&rsquo;ve not made much effort in that direction. In the worst
+case, we could allow it only outside of qualifiers, akin to unions of
+conjunctive queries. It&rsquo;s also possible that a QE algorithm exists that can
+handle disjunction in any position.</p><p>As far as I can tell, however, neither of these faculties are needed to express
+the constraints available in current versions of Rust. Niko alludes to the fact
+that richer constraints will be useful down the line, but perhaps the existence
+of a simple QE algorithm outweighs this concern?</p><h2 id=final-thoughts>Final thoughts</h2><p>As I promised at the outset, the ideas I&rsquo;ve presented here are all pretty simple.
+None involve anything beyond basic set theory. In fact, I have a sneaking
+suspicion that one or both of these QE algorithms were known to Niko when he
+wrote the instigating blog post; the examples he chose enumerate our edge cases
+with uncanny precision. If that&rsquo;s true, I&rsquo;m very curious to know why
+he omitted them. Perhaps I&rsquo;ve overlooked something?</p><p>In any case, I&rsquo;m hopeful that at least some of these ideas are new to the
+Polonius team and can be used to formalize Rust&rsquo;s placeholder region rules. If
+not, perhaps the more formal treatment and parallels with Revesz&rsquo;s work will
+provide others with inspiration; I&rsquo;d love to see Polonius move closer to
+completion.</p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>specifically <a href=https://internals.rust-lang.org/t/blog-post-an-alias-based-formulation-of-the-borrow-checker/7411>IRLO</a> and <code>#wg-polonius</code> on Zulip. <a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>albeit in double exponential time via an algorithm known as <a href=https://en.wikipedia.org/wiki/Cylindrical_algebraic_decomposition>cylindrical
+algebraic decomposition</a>. <a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>There&rsquo;s a fun proof of the cardinality of valid programs
+in any general purpose programming language. If you accept that a program
+exists that can output any natural number, then there are an infinite number
+of valid programs. Furthermore, if you accept that all such programs can be
+encoded as a binary string, the number of valid programs is countably
+infinite. It does not necessarily follow that infinitely many programs means
+infinitely many possible loans&mdash;what is a loan anyways?&mdash;but does strongly
+suggest it. <a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote><p>This was surprising to me, since I expected <code>'static</code> to be
+something like &ldquo;the set of all possible loans&rdquo;. When you start working
+through the implications of constraints like <code>'static: 'a</code> and <code>'a: 'static</code>,
+it becomes clear that <code>'static</code> must be the empty set, but I still don&rsquo;t have
+an intuitive understanding of why <code>'static</code> contains no loans. <a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><p>He refers to this class of logic as &ldquo;Boolean order constraints&rdquo;. You
+can read more in Revesz&rsquo;s textbook, <a href=https://www.springer.com/gp/book/9780387987293><em>Introduction to Constraint Databases</em></a>. <a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:6 role=doc-endnote><p>To be honest, I don&rsquo;t know much about the current system, called
+the <a href=https://github.com/rust-lang/rust/issues/59490>leak check</a>. <a href=#fnref:6 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:7 role=doc-endnote><p>This result comes from <a href=http://cse.unl.edu/~revesz/papers/ADBIS04.pdf>&ldquo;Quantifier-Elimination for the
+First-Order Theory of Boolean Algebras with Linear Cardinality
+Constraints&rdquo;</a>, another paper by Peter Revesz. <a href=#fnref:7 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post-info><div class="post-date dt-published">2021-03-25</div><a class="post-hidden-url u-url" href=http://ecstaticmorse.net/posts/quantifier-elimination/>http://ecstaticmorse.net/posts/quantifier-elimination/</a><div class="post-hidden-author p-author">Dylan MacKenzie</div><div class=post-taxonomies></div></div></article></main><footer class=common-footer><div class=common-footer-bottom><div class=copyright><p>© Dylan MacKenzie, 2021<br>Powered by <a target=_blank rel="noopener noreferrer" href=https://gohugo.io/>Hugo</a>, theme <a target=_blank rel="noopener noreferrer" href=https://github.com/mitrichius/hugo-theme-anubis>Anubis</a>.</p></div></div><p class="h-card vcard"><a href=http://ecstaticmorse.net/ class="p-name u-url url fn" rel=me>Dylan MacKenzie</a></p><a rel=license href=http://creativecommons.org/licenses/by/4.0/><img alt="Creative Commons License" style=border-width:0 src=https://i.creativecommons.org/l/by/4.0/88x31.png></a><br>This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by/4.0/>Creative Commons Attribution 4.0 International License</a>.</footer></div></body></html>
