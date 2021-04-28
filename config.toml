@@ -1,4 +1,4 @@
-baseURL = "http://ecstaticmorse.net/"
+baseURL = "//ecstaticmorse.net/"
 languageCode = "en-us"
 title = "ecstaticmorse"
 theme = "anubis"
