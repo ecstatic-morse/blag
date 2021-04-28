@@ -6,3 +6,6 @@ enableRobotsTXT = true
 
 [params]
 author = "Dylan MacKenzie"
+
+[markup.goldmark.renderer]
+unsafe = true
