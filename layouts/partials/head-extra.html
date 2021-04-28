@@ -1,2 +1,20 @@
 <!--for overriding-->
+<style>
+/* Inline code tags (``) */
+code:not([class^=language]) {
+    background-color: #f1f1f1;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+/* Highlighted footnotes */
+li[id^="fn:"]:target {
+    background-color: #eaf3ff;
+}
+
+section.footnotes {
+    margin-top: 2em;
+}
+</style>
+
 {{ if .Params.katex}}{{ partial "katex.html" . }}{{ end }}
