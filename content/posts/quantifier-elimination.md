@@ -312,10 +312,10 @@ of a simple QE algorithm outweighs this concern?
 
 As I promised at the outset, the ideas I've presented here are all pretty
 simple.  None involve anything beyond basic set theory. In fact, I have a
-sneaking suspicion that one or both of these algorithms were known to Niko
-when he wrote the instigating blog post; the examples he chose seem
-quite prescient beside the work I've done here. If that's true, I'm very
-curious to know why he omitted them.  Perhaps I've overlooked something?
+sneaking suspicion that one or both of these algorithms were known to Niko when
+he wrote the instigating blog post; the examples he chose seem too
+prescient otherwise. If that's true, I'm very curious to know why he omitted
+them. Perhaps I've overlooked something?
 
 In any case, I'm hopeful that at least some of these ideas are new to the
 Polonius working group and can be used to formalize Rust's placeholder region
