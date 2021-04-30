@@ -1,6 +1,6 @@
 ---
 title: "Polonius and the Secret of the Eliminated Quantifier"
-date: 2021-03-25T16:37:41-07:00
+date: 2021-04-30T14:37:41-07:00
 katex: true
 summary: "A possible solution to Polonius' higher-rank trait bound problem."
 ---
