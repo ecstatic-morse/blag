@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ecstaticmorse</title><link>//ecstaticmorse.net/posts/</link><description>ecstaticmorse (Posts)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 25 Mar 2021 16:37:41 -0700</lastBuildDate><atom:link href="//ecstaticmorse.net/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Polonius and the Secret of the Eliminated Quantifier</title><link>//ecstaticmorse.net/posts/quantifier-elimination/</link><pubDate>Thu, 25 Mar 2021 16:37:41 -0700</pubDate><guid>//ecstaticmorse.net/posts/quantifier-elimination/</guid><description>&lt;p>I&amp;rsquo;ve long been intrigued by &lt;a href="https://github.com/rust-lang/polonius">Polonius&lt;/a>, an improved formulation of the borrow
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ecstaticmorse</title><link>//ecstaticmorse.net/posts/</link><description>ecstaticmorse (Posts)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 30 Apr 2021 14:37:41 -0700</lastBuildDate><atom:link href="//ecstaticmorse.net/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Polonius and the Secret of the Eliminated Quantifier</title><link>//ecstaticmorse.net/posts/quantifier-elimination/</link><pubDate>Fri, 30 Apr 2021 14:37:41 -0700</pubDate><guid>//ecstaticmorse.net/posts/quantifier-elimination/</guid><description>&lt;p>I&amp;rsquo;ve long been intrigued by &lt;a href="https://github.com/rust-lang/polonius">Polonius&lt;/a>, an improved formulation of the borrow
 checker inspired by more traditional alias analyses.
 The algorithm that became Polonius was first described by Niko Matsakis in &lt;a href="http://smallcultfollowing.com/babysteps/blog/2018/04/27/an-alias-based-formulation-of-the-borrow-checker">&amp;ldquo;An
 alias-based formulation of the borrow checker&amp;rdquo;&lt;/a>, and has since
@@ -250,10 +250,10 @@ of a simple QE algorithm outweighs this concern?&lt;/p>
 &lt;h2 id="final-thoughts">Final thoughts&lt;/h2>
 &lt;p>As I promised at the outset, the ideas I&amp;rsquo;ve presented here are all pretty
 simple. None involve anything beyond basic set theory. In fact, I have a
-sneaking suspicion that one or both of these algorithms were known to Niko
-when he wrote the instigating blog post; the examples he chose seem
-quite prescient beside the work I&amp;rsquo;ve done here. If that&amp;rsquo;s true, I&amp;rsquo;m very
-curious to know why he omitted them. Perhaps I&amp;rsquo;ve overlooked something?&lt;/p>
+sneaking suspicion that one or both of these algorithms were known to Niko when
+he wrote the instigating blog post; the examples he chose seem too
+prescient otherwise. If that&amp;rsquo;s true, I&amp;rsquo;m very curious to know why he omitted
+them. Perhaps I&amp;rsquo;ve overlooked something?&lt;/p>
 &lt;p>In any case, I&amp;rsquo;m hopeful that at least some of these ideas are new to the
 Polonius working group and can be used to formalize Rust&amp;rsquo;s placeholder region
 rules. If not, perhaps the more formal treatment and parallels with Revesz&amp;rsquo;s
