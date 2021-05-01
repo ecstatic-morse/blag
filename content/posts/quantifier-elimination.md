@@ -273,7 +273,7 @@ $$
 $$
 
 It may look like we can eliminate $x$ via the transitive property as we did
-above, resulting in a similar constraint $a \subset b$. However, this does not
+above, resulting in the constraint $a \subset b$. However, this does not
 hold when $b$ has exactly one more element than $a$. There's no "room" between
 $a$ and $b$ to fit an extra element, so the formula is unsatisfiable in that
 case. In reality, we would need an additional constraint on the cardinality of
