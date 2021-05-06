@@ -120,7 +120,7 @@ $$
 \exists x (\bigcup\limits_{i=1}^{m} y_i \sub x, x \sub \bigcap\limits_{j=1}^{n} z_j)
 $$
 
-If either $y$ or $z$ are empty---i.e., there are no upper (or lower) bounds---the
+If either $y$ or $z$ are empty---i.e., there are no lower (or upper) bounds---the
 formula is trivially satisfiable by setting $x$ to the intersection of the
 upper bounds or the union of the lower bounds respectively. Otherwise, we can
 eliminate the quantified variable by applying the transitive property
@@ -299,7 +299,7 @@ $$
 
 I'm somewhat more hopeful about incorporating disjunction ($\lor$) into
 Polonius, although I've not made much effort in that direction. In the worst
-case, we could allow it only outside of qualifiers, akin to unions of
+case, we could allow it only outside of quantifiers, akin to unions of
 conjunctive queries. It's also possible that a QE algorithm exists that can
 handle disjunction in any position.
 
