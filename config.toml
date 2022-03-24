@@ -1,7 +1,7 @@
 baseURL = "//ecstaticmorse.net/"
 languageCode = "en-us"
 title = "ecstaticmorse"
-theme = "anubis"
+theme = "fuji"
 enableRobotsTXT = true
 
 [params]
