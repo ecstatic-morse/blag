@@ -587,7 +587,6 @@ Head empty, only block sort.
 .post-content #dedication {
     display: none;
 }
-
 .post-content #dedication + p {
     background-color: lightblue;
     border: dotted black 2px;
