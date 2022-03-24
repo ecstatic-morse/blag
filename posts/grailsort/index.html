@@ -85,11 +85,10 @@ each merge be done in $O(m)$ time—the overall runtime of the algorithm is $O(n
 that can be shuffled arbitrarily. The first step is to extract $x ≈ \sqrt{n}$
 such elements. To make indexing easier, we round $x$ up to the nearest power of
 two. If the input does not have enough distinct elements, we are forced to
-round down instead.</p><h4 id=bᴜғexᴛʀᴀᴄᴛ><a class=heading-link href=#bᴜғexᴛʀᴀᴄᴛ>BᴜғExᴛʀᴀᴄᴛ</a></h4><p>How do we find such elements? We are implementing a
-stable sort, after all, so we cannot permute elements at will. However,
-relative order only matters for elements that are equal. That means, if we
-extract a subset of elements such that</p><ul><li>No two elements in the subset are equal.</li><li>Each element in the subset appeared <em>before</em> any of its duplicates in the
-original input.</li></ul><p>We can shuffle that subset arbitrarily without compromising the stability of
+round down instead.</p><h4 id=bᴜғexᴛʀᴀᴄᴛ><a class=heading-link href=#bᴜғexᴛʀᴀᴄᴛ>BᴜғExᴛʀᴀᴄᴛ</a></h4><p>How to find such elements? This is a stable sort, after all, so we cannot
+permute elements at will. However, relative order only matters for elements
+that are equal. That means, if we extract a subset of elements such that</p><ul><li>No two elements in the subset are equal,</li><li>Each element in the subset appeared <em>before</em> any of its duplicates in the
+original input,</li></ul><p>we can shuffle that subset arbitrarily without compromising the stability of
 our sort. When merging it back into the input, we must remember to prefer
 elements from the internal buffer since they appeared first in the original
 input.</p><p>The first element in the input always fulfills the aforementioned criteria, so
@@ -237,7 +236,7 @@ However, the right input is always exactly one block long, so $|R|$ becomes
 $\frac{m}{x}$.</p><p>The factor $|R_{\ne}|$—the number of distinct elements in the right sequence—
 is more interesting. This is what determines the number of iterations through the
 inner loop of MᴇʀɢᴇNᴏBᴜғ.
-We know that the total number of unique elements in either
+We know that the total number of distinct elements in either
 run is bounded by $u$. However, distinct elements can be split across several
 block series, and so the same value may appear in the right sequence of a
 MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear in
