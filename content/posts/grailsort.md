@@ -220,16 +220,15 @@ round down instead.
 
 #### BᴜғExᴛʀᴀᴄᴛ
 
-How do we find such elements? We are implementing a
-stable sort, after all, so we cannot permute elements at will. However,
-relative order only matters for elements that are equal. That means, if we
-extract a subset of elements such that
+How to find such elements? This is a stable sort, after all, so we cannot
+permute elements at will. However, relative order only matters for elements
+that are equal. That means, if we extract a subset of elements such that
 
-- No two elements in the subset are equal.
+- No two elements in the subset are equal,
 - Each element in the subset appeared *before* any of its duplicates in the
-  original input.
+  original input,
 
-We can shuffle that subset arbitrarily without compromising the stability of
+we can shuffle that subset arbitrarily without compromising the stability of
 our sort. When merging it back into the input, we must remember to prefer
 elements from the internal buffer since they appeared first in the original
 input.
@@ -505,7 +504,7 @@ $\frac{m}{x}$.
 The factor $|R\_{\ne}|$—the number of distinct elements in the right sequence—
 is more interesting. This is what determines the number of iterations through the
 inner loop of MᴇʀɢᴇNᴏBᴜғ.
-We know that the total number of unique elements in either
+We know that the total number of distinct elements in either
 run is bounded by $u$. However, distinct elements can be split across several
 block series, and so the same value may appear in the right sequence of a
 MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear in
