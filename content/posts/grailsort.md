@@ -42,7 +42,7 @@ for inclusion in Rust's standard library.[^std-blocksort] I'm not the first to
 try this; there's already a bunch of translations of Andrey's
 implementation in [various languages][rewritten-grailsort]. However, this
 is the first one I know of that uses the block tagging scheme described by
-Huang and Langston, halving the requisite length of the internal compared
+Huang and Langston, which halves the requisite length of the internal buffer compared
 to other implementations. I'm going to describe this method, as well as the
 rest of the algorithm, in detail. Hopefully by expanding on the parts I had
 difficulty with, others will be able to learn about an interesting corner
@@ -95,7 +95,7 @@ of such elements—call this the "internal buffer"— we can merge two contiguou
 sequences $A$ and $B$ by repeatedly comparing the leftmost element from each
 and swapping the lesser one with the leftmost element in the internal buffer.
 
-{{<figure src="/images/grailsort/merge-with-buffer.png" caption="Two steps of an in-place merge using an internal buffer">}}
+{{<figure src="/images/grailsort/merge-with-buffer.png" caption="Two steps of an in-place merge using an internal buffer.">}}
 
 Dotted lines indicate searches or comparisons, while solid lines indicate
 movement—in this case swaps.
@@ -144,7 +144,7 @@ MᴇʀɢᴇNᴏBᴜғ executes the following steps repeatedly.
 Each step puts at least one element from $A$ in its final, merged position. It
 continues until one of the sequences is exhausted.
 
-{{<figure src="/images/grailsort/merge-no-buffer.png" caption="A single step of an in-place merge with no auxiliary buffer">}}
+{{<figure src="/images/grailsort/merge-no-buffer.png" caption="A single step of an in-place merge with no auxiliary buffer.">}}
 
 First, we find the appropriate position in $B$ for the ⚁ at the start of $A$.
 Next we find the number of duplicates of that element (2). Finally, we rotate
