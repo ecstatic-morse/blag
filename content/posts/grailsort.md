@@ -39,7 +39,7 @@ I'll refer to this family of algorithms as [block sort][block-sort-wiki].
 In this post, I'm going to implement Huang and Langston's block sort much like
 Andrey did. My original goal was to create a block sort implementation suitable
 for inclusion in Rust's standard library.[^std-blocksort] I'm not the first to
-try this; the [Rewritten Grailsort project][rewritten-grailsort] has many
+try this; the [Rewritten Grailsort project][rewritten-grailsort] has several
 translations of Andrey's implementation in various languages (including
 Rust). However, this is the first one I know of that uses the block tagging
 scheme described by Huang and Langston, which halves the requisite length
