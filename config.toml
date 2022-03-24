@@ -8,6 +8,7 @@ enableRobotsTXT = true
 author = "Dylan MacKenzie"
 license = "CC BY 4.0"
 licenseLink = "https://creativecommons.org/licenses/by/4.0/legalcode"
+defaultTheme = "auto"
 showLicenseInFooter = true
 
 [markup.goldmark.renderer]
