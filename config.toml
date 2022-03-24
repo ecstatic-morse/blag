@@ -6,6 +6,9 @@ enableRobotsTXT = true
 
 [params]
 author = "Dylan MacKenzie"
+license = "CC BY 4.0"
+licenseLink = "https://creativecommons.org/licenses/by/4.0/legalcode"
+showLicenseInFooter = true
 
 [markup.goldmark.renderer]
 unsafe = true
