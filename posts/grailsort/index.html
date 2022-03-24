@@ -270,7 +270,7 @@ framework that found several subtle bugs during development. Now that it passes
 those tests, I&rsquo;m pretty confident in its correctness.</p><p>In a simple benchmark, MrrlSort took about twice as long as Rust&rsquo;s <code>sort</code>. Not
 bad! Given the number of swaps, rotations, and auxiliary buffer operations I
 expected worse. I&rsquo;m very curious to see how this factor is affected by various
-parameters (size of elements, cost of comparisons, etc.) and whether it can be
+parameters (size of elements, cost of comparisons, etc.). I suspect it can be
 reduced further, but I think I need to take a break for now. To
 paraphrase Gankra, whose offhand mention of Grailsort in <a href=https://github.com/rust-lang/rust/issues/19221#issuecomment-70445816 target=_blank>a comment from 2015</a>
 sent me on this unexpected diversion (and who is also known to publish the
