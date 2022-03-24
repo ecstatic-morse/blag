@@ -1,29 +1,30 @@
-<!doctype html><html lang=en-us data-theme><head><meta charset=utf-8><meta name=HandheldFriendly content="True"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>Polonius and the Secret of the Eliminated Quantifier - ecstaticmorse</title><meta name=description content><link rel=icon type=image/x-icon href=//ecstaticmorse.net/favicon.ico><link rel=apple-touch-icon-precomposed href=//ecstaticmorse.net/favicon.png><link rel=stylesheet href=//ecstaticmorse.net/css/style.cd267f2711fc8d550fa9b9004cd2dca13ae71d0b7af4aecb3c92e1e617996bef.css integrity="sha256-zSZ/JxH8jVUPqbkATNLcoTrnHQt69K7LPJLh5heZa+8="><meta property="og:title" content="Polonius and the Secret of the Eliminated Quantifier"><meta property="og:description" content="A possible solution to Polonius' higher-rank trait bound problem."><meta property="og:type" content="article"><meta property="og:url" content="//ecstaticmorse.net/posts/quantifier-elimination/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-04-30T14:37:41-07:00"><meta property="article:modified_time" content="2021-04-30T14:37:41-07:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Polonius and the Secret of the Eliminated Quantifier"><meta name=twitter:description content="A possible solution to Polonius' higher-rank trait bound problem."><style>code:not([class^=language]){background-color:#f1f1f1;padding:.1em .3em;border-radius:3px}li[id^="fn:"]:target{background-color:#eaf3ff}.katex-display{overflow-x:auto}.katex .vlist-t2{margin-right:0!important}section.footnotes{margin-top:2em}</style><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css integrity=sha384-t5CR+zwDAROtph0PXGte6ia8heboACF9R5l/DiY+WZ3P2lxNgvJkQk5n7GPvLMYw crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js integrity=sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8+w2LAIftJEULZABrF9PPFv+tVkH crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js integrity=sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB+w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v crossorigin=anonymous></script><script>var macros={"\\sub":"\\subseteq","\\sup":"\\supseteq"},delimiters=[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\begin{equation}",right:"\\end{equation}",display:!0},{left:"\\begin{align}",right:"\\end{align}",display:!0},{left:"\\begin{align*}",right:"\\end{align*}",display:!0},{left:"\\begin{alignat}",right:"\\end{alignat}",display:!0},{left:"\\begin{gather}",right:"\\end{gather}",display:!0},{left:"\\begin{gather*}",right:"\\end{gather*}",display:!0},{left:"\\begin{CD}",right:"\\end{CD}",display:!0},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}];document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters,macros,fleqn:!0})})</script></head><body><a class=skip-main href=#main>Skip to main content</a><div class=container><header class=common-header><h1 class=site-title><a href=//ecstaticmorse.net/>ecstaticmorse</a></h1><nav></nav></header><main id=main tabindex=-1><article class="post h-entry"><header class=post-header><h1 class="p-name post-title">Polonius and the Secret of the Eliminated Quantifier</h1></header><div class="content e-content"><p>I&rsquo;ve long been intrigued by <a href=https://github.com/rust-lang/polonius>Polonius</a>, an improved formulation of the borrow
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=HandheldFriendly content="True"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=generator content="Hugo 0.95.0"><link rel="shortcut icon" href=https://cdn.jsdelivr.net/gh/dsrkafuu/dsr-cdn-main@1/images/favicons/dsrca.ico><title>Polonius and the Secret of the Eliminated Quantifier - ecstaticmorse</title><meta name=author content="Dylan MacKenzie"><meta property="og:title" content="Polonius and the Secret of the Eliminated Quantifier"><meta name=twitter:title content="Polonius and the Secret of the Eliminated Quantifier"><meta property="og:type" content="article"><meta property="og:url" content="//ecstaticmorse.net/posts/quantifier-elimination/"><meta property="og:description" content="A possible solution to Polonius&rsquo; higher-rank trait bound problem."><meta name=twitter:description content="A possible solution to Polonius&rsquo; higher-rank trait bound problem."><meta name=twitter:card content="summary"><meta property="article:published_time" content="2021-04-30T14:37:41-07:00"><meta property="article:modified_time" content="2021-04-30T14:37:41-07:00"><style>@media(prefers-color-scheme:dark){body[data-theme=auto] img{filter:brightness(80%)}}body[data-theme=dark] img{filter:brightness(80%)}</style><link rel=stylesheet href=//ecstaticmorse.net/assets/css/fuji.min.css></head><body data-theme=auto data-theme-auto=false><script data-cfasync=false>var fujiThemeData=localStorage.getItem("fuji_data-theme");fujiThemeData?fujiThemeData!=="auto"&&document.body.setAttribute("data-theme",fujiThemeData==="dark"?"dark":"light"):localStorage.setItem("fuji_data-theme","auto")</script><header><div class="container-lg clearfix"><div class="col-12 header"><a class=title-main href=//ecstaticmorse.net/>ecstaticmorse</a></div></div></header><main><div class="container-lg clearfix"><div class="col-12 col-md-9 float-left content"><article><h2 class="post-item post-title"><a href=//ecstaticmorse.net/posts/quantifier-elimination/>Polonius and the Secret of the Eliminated Quantifier</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-04-30</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-content markdown-body"><p>I&rsquo;ve long been intrigued by <a href=https://github.com/rust-lang/polonius target=_blank>Polonius</a>, an improved formulation of the borrow
 checker inspired by more traditional alias analyses.
-The algorithm that became Polonius was first described by Niko Matsakis in <a href=http://smallcultfollowing.com/babysteps/blog/2018/04/27/an-alias-based-formulation-of-the-borrow-checker>&ldquo;An
+The algorithm that became Polonius was first described by Niko Matsakis in <a href=http://smallcultfollowing.com/babysteps/blog/2018/04/27/an-alias-based-formulation-of-the-borrow-checker target=_blank>&ldquo;An
 alias-based formulation of the borrow checker&rdquo;</a>, and has since
-been implemented <a href=https://github.com/rust-lang/polonius>out-of-tree</a>.</p><p>The project is currently on hiatus, however, and resumption does not seem
-imminent. One roadblock is Polonius' inability to reason about <a href=https://doc.rust-lang.org/nomicon/hrtb.html>higher-rank
+been implemented <a href=https://github.com/rust-lang/polonius target=_blank>out-of-tree</a>.</p><p>The project is currently on hiatus, however, and resumption does not seem
+imminent. One roadblock is Polonius&rsquo; inability to reason about <a href=https://doc.rust-lang.org/nomicon/hrtb.html target=_blank>higher-rank
 trait bounds (HRTBs)</a>. It&rsquo;s pretty rare for users to encounter
 these, but they&rsquo;re an integral part of the language that appear when desugaring
-some <code>Fn</code> trait bounds. This shortcoming was <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/21/hereditary-harrop-region-constraints/>described in detail</a> on
+some <code>Fn</code> trait bounds. This shortcoming was <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/21/hereditary-harrop-region-constraints/ target=_blank>described in detail</a> on
 Niko&rsquo;s blog over 2 years ago in his last post on Polonius. I suggest reading
-that post&rsquo;s immediate predecessor, <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/17/polonius-and-region-errors/>a more general discussion of placeholder
+that post&rsquo;s immediate predecessor, <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/17/polonius-and-region-errors/ target=_blank>a more general discussion of placeholder
 region errors</a>, as well.</p><p>As far as I know, there is no accepted solution to these problems. This post
 will explore one possibility, an algorithm for quantifier elimination in a
 fragment of first-order logic on partially ordered sets. The idea (if not the
 nomenclature) is pretty simple, but I haven&rsquo;t seen it discussed in any of the
 usual forums.<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> This is somewhat surprising, since it appears to solve
-the problems around HRTBs in a straightforward way.</p><h2 id=quantifier-elimination>Quantifier elimination</h2><p>In formal logic, the process of rewriting a formula that includes quantifiers
-into an equivalent one without them is known as <a href=https://mathworld.wolfram.com/QuantifierElimination.html>quantifier elimination</a>
+the problems around HRTBs in a straightforward way.</p><h2 id=quantifier-elimination><a class=heading-link href=#quantifier-elimination>Quantifier elimination</a></h2><p>In formal logic, the process of rewriting a formula that includes quantifiers
+into an equivalent one without them is known as <a href=https://mathworld.wolfram.com/QuantifierElimination.html target=_blank>quantifier elimination</a>
 (QE). Certain theories are said to have QE, which means that all formulas can
 be rewritten this way, while others do not. For example, the real numbers with
 addition, multiplication, equality, and strict ordering have QE,<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup> but not
 the integers with the same operators. If you disallow multiplication between
-integer variables, however, you get <a href=https://en.wikipedia.org/wiki/Presburger_arithmetic>Presburger arithmetic</a>, which <em>does</em>
+integer variables, however, you get <a href=https://en.wikipedia.org/wiki/Presburger_arithmetic target=_blank>Presburger arithmetic</a>, which <em>does</em>
 allow for QE.</p><p>Our goal, then, is to find a QE algorithm for the &ldquo;theory&rdquo; of placeholder
 regions used by Polonius. Clearly, this will depend on both the domain of our
-theory (regions), as well as the operations allowed on those regions.</p><h2 id=regions-are-sets-of-loans>Regions are sets of loans</h2><p>Niko&rsquo;s blog posts lay out the requirements for Polonius' placeholder region
+theory (regions), as well as the operations allowed on those regions.</p><h2 id=regions-are-sets-of-loans><a class=heading-link href=#regions-are-sets-of-loans>Regions are sets of loans</a></h2><p>Niko&rsquo;s blog posts lay out the requirements for Polonius&rsquo; placeholder region
 logic. As he explains it, &ldquo;regions are sets of loans&rdquo;, so our domain is that of
 sets. However, placeholder regions are somewhat different than the sets of
 loans we encounter when checking function bodies. Inside a function, there is a
@@ -33,9 +34,9 @@ between placeholder regions in a function signature must hold across all
 possible loans in all possible callers of that function. Therefore, we will
 treat placeholder regions as if they may contain infinitely many loans, the set
 of all loans that could be created in any valid Rust program.<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup></p><p>Sets, when ordered by inclusion, are an example of a common algebraic structure
-called a <a href=https://en.wikipedia.org/wiki/Partially_ordered_set>partially-ordered set or poset</a>. If we extend our regions with
+called a <a href=https://en.wikipedia.org/wiki/Partially_ordered_set target=_blank>partially-ordered set or poset</a>. If we extend our regions with
 the canonical set operators&mdash;union ($\cup$) and intersection ($\cap$)&mdash;they
-form a <a href=https://en.wikipedia.org/wiki/Lattice_(order)>lattice</a>. Lattices are another common structure, and we
+form a <a href=https://en.wikipedia.org/wiki/Lattice_%28order%29 target=_blank>lattice</a>. Lattices are another common structure, and we
 will use results from both to develop our QE algorithm. Our
 lattice has a global lower bound, the empty set ($\empty$), but it has no
 global upper bound because it is infinite. As Niko&rsquo;s posts show, this global
@@ -46,8 +47,8 @@ which must hold. This is logical conjunction ($\land$, sometimes abbreviated
 with a comma).</p><p>And&mldr;That&rsquo;s it! You can combine these operators to express, for example,
 equality between regions ($a \sub b \land b \sub a \implies a = b$), but these
 primitives are all that&rsquo;s required for basic placeholder region
-constraints. This is the logic we will extend with quantification.</p><h2 id=existential-quantification>Existential quantification</h2><p>We&rsquo;re ready to add existential quantification ($\exists x$) to the mix. I&rsquo;ll
-use the approach from Lemma 2.4 in <a href=http://cse.unl.edu/~revesz/papers/IJAC98.pdf>this paper by Peter Revesz</a> to
+constraints. This is the logic we will extend with quantification.</p><h2 id=existential-quantification><a class=heading-link href=#existential-quantification>Existential quantification</a></h2><p>We&rsquo;re ready to add existential quantification ($\exists x$) to the mix. I&rsquo;ll
+use the approach from Lemma 2.4 in <a href=http://cse.unl.edu/~revesz/papers/IJAC98.pdf target=_blank>this paper by Peter Revesz</a> to
 demonstrate an algorithm for QE. Revesz shows quantifier elimination for a
 slightly more general theory,<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup> one that allows for inequality constraints
 with the empty set, but we won&rsquo;t need that here. First, I&rsquo;ll write a general
@@ -101,7 +102,7 @@ y_1 \sub z_1, & \dots, & y_1 \sub z_n, \\
     y_m \sub z_1, & \dots, & y_m \sub z_n, \\
     u_1 \sub v_1, & \dots, & u_s \sub v_s
 \end{array}
-\end{align*}</p><h2 id=universal-quantification>Universal quantification</h2><p>If our theory had logical negation ($\neg$) as well as existential QE, we could
+\end{align*}</p><h2 id=universal-quantification><a class=heading-link href=#universal-quantification>Universal quantification</a></h2><p>If our theory had logical negation ($\neg$) as well as existential QE, we could
 stop here. It would be straightforward to eliminate universal quantifiers
 ($\forall$) by using the following identity to transform them into existential
 ones.</p><p>$$
@@ -111,12 +112,12 @@ show later, it <em>cannot</em> (as long as we want QE). Luckily, due to the limi
 we&rsquo;ve imposed, we can construct a separate algorithm for eliminating universal
 quantifiers. We will take the same approach as for existential quantifiers by
 splitting the bounds on a quantified variable into upper and lower ones and
-considering them separately.</p><h3 id=upper-bounds>Upper bounds</h3><p>Upper bounds on universally quantified variables are never satisfiable. For
+considering them separately.</p><h3 id=upper-bounds><a class=heading-link href=#upper-bounds>Upper bounds</a></h3><p>Upper bounds on universally quantified variables are never satisfiable. For
 example, if we have a constraint like $\forall x (x \sub z)$ for some free
 region $z$, we can always find a loan $L$ such that $L \notin z$ because the
 set of loans is infinite. The set $\{ L \} \cup z$ provides a counterexample
 to our quantified formula, so any universally quantified formula with an upper
-bound on the quantified variable is unsatisfiable ($\bot$).</p><h3 id=lower-bounds>Lower bounds</h3><p>Lower bounds, however, <em>are</em> satisfiable due to the existence of a global lower
+bound on the quantified variable is unsatisfiable ($\bot$).</p><h3 id=lower-bounds><a class=heading-link href=#lower-bounds>Lower bounds</a></h3><p>Lower bounds, however, <em>are</em> satisfiable due to the existence of a global lower
 bound for regions. This is $\empty$ or, as we discussed earlier, <code>'static</code>.
 Given a constraint such as the following,</p><p>$$\forall x (y \sub x)$$</p><p>we can substitute $\empty$ for $x$ to obtain the constraint $y \sub \empty$ or
 equivalently $y = \empty$. The resulting constraint is both necessary ($\empty$
@@ -127,11 +128,11 @@ conjunctions of subset constraints.</p><p>\begin{align*}
 \forall x (y_1 \sub x, \dots, y_n \sub x) &\iff \forall x (y_1 \sub x), \dots, \forall x (y_n \sub x) \\
 &\iff y_1 \sub \empty, \dots, y_n \sub \empty
 \end{align*}</p><p>Remember, we only need to handle lower bounds on the existential: any upper
-bound would make the entire formula unsatisfiable.</p><h2 id=putting-it-all-together>Putting it all together</h2><p>By repeatedly applying these QE algorithms to the innermost quantifier, we can
+bound would make the entire formula unsatisfiable.</p><h2 id=putting-it-all-together><a class=heading-link href=#putting-it-all-together>Putting it all together</a></h2><p>By repeatedly applying these QE algorithms to the innermost quantifier, we can
 simplify arbitrarily complex quantified formulae to equivalent unquantified
 ones, emit an error if any of them are unsatisfiable and pass the resulting
 constraints to Polonius. Coupled with one of the approaches to emitting
-placeholder region errors laid out on <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/17/polonius-and-region-errors/>Niko&rsquo;s blog</a>, this
+placeholder region errors laid out on <a href=https://smallcultfollowing.com/babysteps/blog/2019/01/17/polonius-and-region-errors/ target=_blank>Niko&rsquo;s blog</a>, this
 should be enough to handle any lifetime constraint that can be expressed in
 Rust.</p><p>Let&rsquo;s try out a few test cases just to be sure. We&rsquo;ll start with the example
 <code>forall&lt;'x, 'y> { 'x: 'y }</code> from Niko&rsquo;s blog. Our algorithm would show this to
@@ -143,16 +144,16 @@ be unsatisfiable by the following process:</p><p>\begin{align*}
 on the quantified variable $y$. This can be reduced to the constraint $x \sub
 \empty$ via the algorithm for universal QE. But when we evaluate the second
 quantifier, we see an upper bound on the quantified variable $x$, so this
-formula is false.</p><p>Another interesting example comes from <a href=https://github.com/rust-lang/rust/pull/65232>rust-lang/rust#65232</a>:</p><p>$$
+formula is false.</p><p>Another interesting example comes from <a href=https://github.com/rust-lang/rust/pull/65232 target=_blank>rust-lang/rust#65232</a>:</p><p>$$
 \exists a \forall b (b \sub a) \implies \bot
 $$</p><p>The existing placeholder region logic needs a special-case to handle this type
 of formula.<sup id=fnref:6><a href=#fn:6 class=footnote-ref role=doc-noteref>6</a></sup> This is because formulations of the borrow checker
 based on program locations contain both a global upper bound (<code>'static</code>, all
-possible program locations) and a global lower bound (the <a href=https://doc.rust-lang.org/stable/nightly-rustc/rustc_middle/ty/sty/enum.RegionKind.html#variant.ReEmpty>empty
+possible program locations) and a global lower bound (the <a href=https://doc.rust-lang.org/stable/nightly-rustc/rustc_middle/ty/sty/enum.RegionKind.html#variant.ReEmpty target=_blank>empty
 region</a>). While the former is a valid solution to a constraint
 problem, the latter results in an error. The process is more elegant in our new
 system based on sets of loans, which does not have a global upper bound; the
-innermost quantifier is trivially false.</p><h2 id=negation-disjunction-and-implication>Negation, disjunction, and implication</h2><p>It&rsquo;s not all sunshine and roses, though. In the framework I&rsquo;ve described above,
+innermost quantifier is trivially false.</p><h2 id=negation-disjunction-and-implication><a class=heading-link href=#negation-disjunction-and-implication>Negation, disjunction, and implication</a></h2><p>It&rsquo;s not all sunshine and roses, though. In the framework I&rsquo;ve described above,
 the presence of QE is mutually exclusive with logical negation.
 Logical negation would allow us to express a <strong>strict</strong> subset relation ($\neg
 (b \sub a) \to a \subset b$), as well as inequality constraints between
@@ -181,7 +182,7 @@ conjunctive queries. It&rsquo;s also possible that a QE algorithm exists that ca
 handle disjunction in any position.</p><p>As far as I can tell, however, neither of these faculties are needed to express
 the constraints available in current versions of Rust. Niko alludes to the fact
 that richer constraints will be useful down the line, but perhaps the existence
-of a simple QE algorithm outweighs this concern?</p><h2 id=final-thoughts>Final thoughts</h2><p>As I promised at the outset, the ideas I&rsquo;ve presented here are all pretty
+of a simple QE algorithm outweighs this concern?</p><h2 id=final-thoughts><a class=heading-link href=#final-thoughts>Final thoughts</a></h2><p>As I promised at the outset, the ideas I&rsquo;ve presented here are all pretty
 simple. None involve anything beyond basic set theory. In fact, I have a
 sneaking suspicion that one or both of these algorithms were known to Niko when
 he wrote the instigating blog post; the examples he chose seem too
@@ -190,20 +191,29 @@ them. Perhaps I&rsquo;ve overlooked something?</p><p>In any case, I&rsquo;m hope
 Polonius working group and can be used to formalize Rust&rsquo;s placeholder region
 rules. If not, perhaps the more formal treatment and parallels with Revesz&rsquo;s
 work will provide others with inspiration; I&rsquo;d love to see Polonius move closer
-to completion.</p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>specifically <a href=https://internals.rust-lang.org/t/blog-post-an-alias-based-formulation-of-the-borrow-checker/7411>IRLO</a> and <code>#wg-polonius</code> on Zulip. <a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>albeit in double exponential time via an algorithm known as <a href=https://en.wikipedia.org/wiki/Cylindrical_algebraic_decomposition>cylindrical
-algebraic decomposition</a>. <a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>There&rsquo;s a fun proof of the cardinality of valid programs
+to completion.</p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>specifically <a href=https://internals.rust-lang.org/t/blog-post-an-alias-based-formulation-of-the-borrow-checker/7411 target=_blank>IRLO</a> and <code>#wg-polonius</code> on Zulip.&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>albeit in double exponential time via an algorithm known as <a href=https://en.wikipedia.org/wiki/Cylindrical_algebraic_decomposition target=_blank>cylindrical
+algebraic decomposition</a>.&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>There&rsquo;s a fun proof of the cardinality of valid programs
 in any general purpose programming language. If you accept that a program
 exists that can output any natural number, then there are an infinite number
 of valid programs. Furthermore, if you accept that all such programs can be
 encoded as a binary string, the number of valid programs is countably
 infinite. It does not necessarily follow that infinitely many programs means
 infinitely many possible loans&mdash;what is a loan anyways?&mdash;but does strongly
-suggest it. <a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote><p>This was surprising to me, since I expected <code>'static</code> to be
+suggest it.&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote><p>This was surprising to me, since I expected <code>'static</code> to be
 something like &ldquo;the set of all possible loans&rdquo;. When you start working
 through the implications of constraints like <code>'static: 'a</code> and <code>'a: 'static</code>,
 it becomes clear that <code>'static</code> must be the empty set, but I still don&rsquo;t have
-an intuitive understanding of why <code>'static</code> contains no loans. <a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><p>He refers to this class of logic as &ldquo;Boolean order constraints&rdquo;. You
-can read more in Revesz&rsquo;s textbook, <a href=https://www.springer.com/gp/book/9780387987293><em>Introduction to Constraint Databases</em></a>. <a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:6 role=doc-endnote><p>To be honest, I don&rsquo;t know much about the current system, called
-the <a href=https://github.com/rust-lang/rust/issues/59490>leak check</a>. <a href=#fnref:6 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:7 role=doc-endnote><p>This result comes from <a href=http://cse.unl.edu/~revesz/papers/ADBIS04.pdf>&ldquo;Quantifier-Elimination for the
+an intuitive understanding of why <code>'static</code> contains no loans.&#160;<a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><p>He refers to this class of logic as &ldquo;Boolean order constraints&rdquo;. You
+can read more in Revesz&rsquo;s textbook, <a href=https://www.springer.com/gp/book/9780387987293 target=_blank><em>Introduction to Constraint Databases</em></a>.&#160;<a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:6 role=doc-endnote><p>To be honest, I don&rsquo;t know much about the current system, called
+the <a href=https://github.com/rust-lang/rust/issues/59490 target=_blank>leak check</a>.&#160;<a href=#fnref:6 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:7 role=doc-endnote><p>This result comes from <a href=http://cse.unl.edu/~revesz/papers/ADBIS04.pdf target=_blank>&ldquo;Quantifier-Elimination for the
 First-Order Theory of Boolean Algebras with Linear Cardinality
-Constraints&rdquo;</a>, another paper by Peter Revesz. <a href=#fnref:7 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post-info><div class="post-date dt-published">2021-04-30</div><a class="post-hidden-url u-url" href=//ecstaticmorse.net/posts/quantifier-elimination/>//ecstaticmorse.net/posts/quantifier-elimination/</a><div class="post-hidden-author p-author">Dylan MacKenzie</div><div class=post-taxonomies></div></div></article></main><footer class=common-footer><div class=common-footer-bottom><div class=copyright><p>© Dylan MacKenzie, 2021<br>Powered by <a target=_blank rel="noopener noreferrer" href=https://gohugo.io/>Hugo</a>, theme <a target=_blank rel="noopener noreferrer" href=https://github.com/mitrichius/hugo-theme-anubis>Anubis</a>.</p></div></div><p class="h-card vcard"><a href=//ecstaticmorse.net/ class="p-name u-url url fn" rel=me>Dylan MacKenzie</a></p><a rel=license href=http://creativecommons.org/licenses/by/4.0/><img alt="Creative Commons License" style=border-width:0 src=https://i.creativecommons.org/l/by/4.0/88x31.png></a><br>This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by/4.0/>Creative Commons Attribution 4.0 International License</a>.</footer></div></body></html>
+Constraints&rdquo;</a>, another paper by Peter Revesz.&#160;<a href=#fnref:7 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div></article></div><aside class="col-12 col-md-3 float-left sidebar"><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#quantifier-elimination>Quantifier elimination</a></li><li><a href=#regions-are-sets-of-loans>Regions are sets of loans</a></li><li><a href=#existential-quantification>Existential quantification</a></li><li><a href=#universal-quantification>Universal quantification</a><ul><li><a href=#upper-bounds>Upper bounds</a></li><li><a href=#lower-bounds>Lower bounds</a></li></ul></li><li><a href=#putting-it-all-together>Putting it all together</a></li><li><a href=#negation-disjunction-and-implication>Negation, disjunction, and implication</a></li><li><a href=#final-thoughts>Final thoughts</a></li></ul></nav></div></aside></div><div class=btn><div class=btn-menu id=btn-menu><i class="iconfont icon-grid-sharp"></i></div><div class=btn-toggle-mode><i class="iconfont icon-contrast-sharp"></i></div><div class=btn-scroll-top><i class="iconfont icon-chevron-up-circle-sharp"></i></div></div><aside class=sidebar-mobile style=display:none><div class=sidebar-wrapper><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div></div></div></div></aside></main><footer><div class="container-lg clearfix"><div class="col-12 footer"><p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=https://creativecommons.org/licenses/by/4.0/legalcode target=_blank>CC BY 4.0</a>.</p><span>&copy; 2022
+<a href=//ecstaticmorse.net/>Dylan MacKenzie</a>
+| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a></span></div></div></footer><script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
+<script defer src=https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js></script>
+<script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.27.0/components/prism-core.min.js></script>
+<script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.27.0/plugins/autoloader/prism-autoloader.min.js></script>
+<script defer src=/assets/js/fuji.min.js></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css><script src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js></script>
+<script>var macros={"\\sub":"\\subseteq","\\sup":"\\supseteq"},delimiters=[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\begin{equation}",right:"\\end{equation}",display:!0},{left:"\\begin{align}",right:"\\end{align}",display:!0},{left:"\\begin{align*}",right:"\\end{align*}",display:!0},{left:"\\begin{alignat}",right:"\\end{alignat}",display:!0},{left:"\\begin{gather}",right:"\\end{gather}",display:!0},{left:"\\begin{gather*}",right:"\\end{gather*}",display:!0},{left:"\\begin{CD}",right:"\\end{CD}",display:!0},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}];document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters,macros,fleqn:!0})})</script></body></html>
