@@ -15,14 +15,14 @@ Langston.<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a>
 I&rsquo;ll refer to this family of algorithms as <a href=https://en.wikipedia.org/wiki/Block_sort target=_blank>block sort</a>.</p><p>In this post, I&rsquo;m going to implement Huang and Langston&rsquo;s block sort much like
 Andrey did. My original goal was to create a block sort implementation suitable
 for inclusion in Rust&rsquo;s standard library.<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup> I&rsquo;m not the first to
-try this; there&rsquo;s already a bunch of translations of Andrey&rsquo;s
-implementation in <a href=https://github.com/HolyGrailSortProject/Rewritten-Grailsort target=_blank>various languages</a>. However, this
-is the first one I know of that uses the block tagging scheme described by
-Huang and Langston, which halves the requisite length of the internal buffer compared
-to other implementations. I&rsquo;m going to describe this method, as well as the
-rest of the algorithm, in detail. Hopefully by expanding on the parts I had
-difficulty with, others will be able to learn about an interesting corner
-of computer science.</p><h2 id=merging-in-place><a class=heading-link href=#merging-in-place>Merging In-Place</a></h2><p>A block sort is fundamentally a merge sort. It repeatedly merges two sorted
+try this; the <a href=https://github.com/HolyGrailSortProject/Rewritten-Grailsort target=_blank>Rewritten Grailsort project</a> has many
+translations of Andrey&rsquo;s implementation in various languages (including
+Rust). However, this is the first one I know of that uses the block tagging
+scheme described by Huang and Langston, which halves the requisite length
+of the internal buffer compared to other implementations. I&rsquo;m going to
+describe this method, as well as the rest of the algorithm, in detail.
+Hopefully by expanding on the parts I had difficulty with, others will be
+able to learn about an interesting corner of computer science.</p><h2 id=merging-in-place><a class=heading-link href=#merging-in-place>Merging In-Place</a></h2><p>A block sort is fundamentally a merge sort. It repeatedly merges two sorted
 subsequences (runs) until the entire input is sorted. Unlike a typical merge
 sort, however, we&rsquo;re not allowed to use an external buffer, so we&rsquo;re going to
 need a merge subroutine that works in-place. Unfortunately without <em>any</em>
