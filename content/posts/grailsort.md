@@ -600,6 +600,14 @@ body[data-theme="dark"] .post-content #dedication + p {
     padding: 8px;
     margin-bottom: 2em;
 }
+@media (prefers-color-scheme: dark) {
+    body[data-theme="auto"] .post-content #dedication + p {
+        background-color: black;
+        border: dotted grey 2px;
+        padding: 8px;
+        margin-bottom: 2em;
+    }
+}
 
 .post-content .heading-link {
     color: var(--color-primary);
