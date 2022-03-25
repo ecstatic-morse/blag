@@ -173,7 +173,7 @@ its immediate $B$ block predecessor with the tail of its immediate $B$ block
 successor as shown below with a single $A$ block.</p><figure><img src=/images/grailsort/tag-block-tag.png alt="A swap denotes the end of one B block series and the start of the next."><figcaption><p>A swap denotes the end of one B block series and the start of the next.</p></figcaption></figure><p>You may wonder why we swap with the head of the preceding block instead of the
 tail. This is to avoid collisions when the $B$ block series in question
 consists of only a single block. To convince you that everything still works
-correctly, I&rsquo;ve illustrated the single block case below.</p><figure><img src=/images/grailsort/tag-block-single.png alt="Swapping with the head avoids collisions in a B block series of length one."><figcaption><p>Swapping with the head avoids collisions in a B block series of length one.</p></figcaption></figure><h4 id=bʟᴏᴄᴋuɴᴛᴀɢ><a class=heading-link href=#bʟᴏᴄᴋuɴᴛᴀɢ>BʟᴏᴄᴋUɴᴛᴀɢ</a></h4><p>To get an even better understanding of the BʟᴏᴄᴋTᴀɢ routine, let&rsquo;s see how
+correctly, I&rsquo;ve illustrated the single block case below.</p><figure><img src=/images/grailsort/tag-block-single.png alt="Swapping with the head avoids collisions in a B block series of length one."><figcaption><p>Swapping with the head avoids collisions in a B block series of length one.</p></figcaption></figure><h4 id=bʟᴏᴄᴋuɴᴛᴀɢ><a class=heading-link href=#bʟᴏᴄᴋuɴᴛᴀɢ>BʟᴏᴄᴋUɴᴛᴀɢ</a></h4><p>To better understand the BʟᴏᴄᴋTᴀɢ routine, let&rsquo;s see how
 to extract the information it encoded. We&rsquo;ll do this incrementally by
 scanning linearly across the blocks. Assuming we start in a $B$ block series:</p><ol><li>Compare the head of the $B$ block with its immediate successor in that
 block. If the head is greater than its successor, this is the last $B$
@@ -230,18 +230,17 @@ complexity for MᴇʀɢᴇNᴏBᴜғRɪɢʜᴛ was $O(|R_{\ne}||R| + |R_{\ne}| \
 |L|)$, where $L$ and $R$ are the sequences on the left and right
 respectively.<sup id=fnref:10><a href=#fn:10 class=footnote-ref role=doc-noteref>10</a></sup></p><p>Each BʟᴏᴄᴋMᴇʀɢᴇNᴏBᴜғ operates on a single pair of runs and may involve multiple
 invocations of MᴇʀɢᴇNᴏBᴜғ. A single element will be part of no more than two
-MᴇʀɢᴇNᴏBᴜғ invocations (once on the left, once on the right). The left input
-to MᴇʀɢᴇNᴏBᴜғ may arbitrarily long, so $|L|$ becomes $m$ in the worst-case.
-However, the right input is always exactly one block long, so $|R|$ becomes
-$\frac{m}{x}$.</p><p>The factor $|R_{\ne}|$—the number of distinct elements in the right sequence—
-is more interesting. This is what determines the number of iterations through the
-inner loop of MᴇʀɢᴇNᴏBᴜғ.
-We know that the total number of distinct elements in either
-run is bounded by $u$. However, distinct elements can be split across several
+MᴇʀɢᴇNᴏBᴜғ invocations (once on the left, once on the right). Recall that the
+factor $|R_{\ne}|$—the number of distinct elements in the right sequence—is
+what determines the number of iterations through the inner loop of MᴇʀɢᴇNᴏBᴜғ.
+We&rsquo;re going to add up all these iterations to compute the complexity of BʟᴏᴄᴋMᴇʀɢᴇNᴏBᴜғ.</p><p>The left input to MᴇʀɢᴇNᴏBᴜғ may arbitrarily long, so $|L|$ becomes $m$ in the
+worst-case, while the right input is always exactly one block long and becomes
+becomes $\frac{m}{x}$. $|R_{\ne}|$ is bounded by $u$, the number of distinct
+elements in the input. However, distinct elements can be split across several
 block series, and so the same value may appear in the right sequence of a
-MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear in
-<strong>no more than four MᴇʀɢᴇNᴏBᴜғ operations</strong>, so $|R_{\ne}|$ can be replaced with
-$u$ when computing the total runtime for all operations.</p><p>Why four? Since runs are sorted, all equal elements appear consecutively within
+MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear
+in <strong>no more than four MᴇʀɢᴇNᴏBᴜғ operations</strong>, so we can substitute $u$ for
+$|R_{\ne}|$ when computing the total runtime across all iterations.</p><p>Why four? Since runs are sorted, all equal elements appear consecutively within
 their run. Therefore, a single value can be present in exactly two settings:</p><ul><li>any number of consecutive blocks whose tail is equal to that value.</li><li>zero or one blocks whose tail is not equal to that value.</li></ul><p>BʟᴏᴄᴋRᴏʟʟ, because it is stable, keeps blocks from one run whose tails are
 equal together in a single series, so all blocks from the first case remain
 contiguous. This gives us a maximum of two block series in each run that may contain a
@@ -260,8 +259,9 @@ for the part in the internal buffer. Because the buffer has length
 $O(\sqrt{n})$, we can sort the internal buffer using a quadratic algorithm,
 then call MᴇʀɢᴇNᴏBᴜғ to merge it into the input. Remember that elements in
 the internal buffer came before any of their duplicates in the original
-input, so they should be preferred when merging to preserve stability.</p><p>The input is now sorted!</p><h2 id=conclusion><a class=heading-link href=#conclusion>Conclusion</a></h2><p>With that, we&rsquo;ve finished our own holy sorting grail. I honestly find it pretty
-miraculous that this is even possible. It&rsquo;s a lot of work just to sort a list!</p><p>I&rsquo;ve called my implementation
+input, so they should be preferred when merging to preserve stability.</p><p>The input is now sorted!</p><h2 id=conclusion><a class=heading-link href=#conclusion>Conclusion</a></h2><p>With that, we&rsquo;ve finished our own holy sorting grail. Honestly I find it
+miraculous that this is even possible. But it&rsquo;s a lot of work just to sort a
+list!</p><p>I&rsquo;ve called my implementation
 <a href=https://github.com/ecstatic-morse/MrrlSort target=_blank>MrrlSort</a> to pay tribute to Andrey
 (and because it sounds a bit like &ldquo;grail&rdquo;). It&rsquo;s tested using
 <a href=https://docs.rs/proptest/latest/proptest/ target=_blank>proptest</a>, a property-based testing
