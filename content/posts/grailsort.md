@@ -214,9 +214,9 @@ each merge be done in $O(m)$ time—the overall runtime of the algorithm is $O(n
 
 As discussed above, MᴇʀɢᴇBᴜғ requires an internal buffer comprised of elements
 that can be shuffled arbitrarily. The first step is to extract $x ≈ \sqrt{n}$
-such elements. To make indexing easier, we round $x$ up to the nearest power of
-two. If the input does not have enough distinct elements, we are forced to
-round down instead.
+such elements. To make indexing easier, we round up to the nearest power of
+two. If there are not enough suitable elements, extract as many as possible
+(rounding down instead).
 
 #### BᴜғExᴛʀᴀᴄᴛ
 
@@ -229,9 +229,9 @@ that are equal. That means, if we extract a subset of elements such that
   original input,
 
 we can shuffle that subset arbitrarily without compromising the stability of
-our sort. When merging it back into the input, we must remember to prefer
-elements from the internal buffer since they appeared first in the original
-input.
+our sort. When merging the internal buffer back into the input, we must prefer
+elements from the buffer if there are duplicates, since they appeared first
+originally.
 
 The first element in the input always fulfills the aforementioned criteria, so
 we begin with an internal buffer of length 1. The buffer must remain sorted
@@ -406,7 +406,7 @@ scanning linearly across the blocks. Assuming we start in a $B$ block series:
 {{<figure src="/images/grailsort/tag-block-untag.png" caption="Untagging reconstructs the data from the movement imitation buffer and puts the input back in original order.">}}
 
 Note that this scheme is unable to encode how many $A$ blocks are at the start
-and end of the block sequence. There's no preceding/succeeding $B$ block, so we
+and end of the run: there's no preceding (succeeding) $B$ block. We
 must pass this information out-of-band. Thankfully it is of constant size.
 
 #### BʟᴏᴄᴋMᴇʀɢᴇBᴜғ
@@ -442,7 +442,7 @@ reaches the end.
 As in Phase 1, we may have only a single run at the end of the input. In this
 case there is no merging to be done, and we can continue to the next value of
 $m$. We may also have a pair of runs where the length of the one on the right
-($B$) is not exactly $m$. In this case, the final $B$ block may have size less
+is not exactly $m$. In this case, the final $B$ block may have size less
 than $x$. We'll call it a partial block.
 
 Trying to sort and tag the partial block would make it difficult to index any
@@ -505,7 +505,7 @@ The left input to MᴇʀɢᴇNᴏBᴜғ may arbitrarily long, so $|L|$ becomes $
 worst-case, while the right input is always exactly one block long and becomes
 becomes $\frac{m}{x}$. $|R\_{\ne}|$ is bounded by $u$, the number of distinct
 elements in the input. However, distinct elements can be split across several
-block series, and so the same value may appear in the right sequence of a
+block series, meaning the same value can appear in the right sequence of a
 MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear
 in **no more than four MᴇʀɢᴇNᴏBᴜғ operations**, so we can substitute $u$ for
 $|R\_{\ne}|$ when computing the total runtime across all iterations.
