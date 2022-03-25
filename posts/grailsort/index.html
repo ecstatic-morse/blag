@@ -83,15 +83,15 @@ sorted ($n \le m$). As long as each step is done in $O(n)$ time—requiring that
 each merge be done in $O(m)$ time—the overall runtime of the algorithm is $O(n
 \log{} n)$.</p><h3 id=phase-0-setup><a class=heading-link href=#phase-0-setup>Phase 0: Setup</a></h3><p>As discussed above, MᴇʀɢᴇBᴜғ requires an internal buffer comprised of elements
 that can be shuffled arbitrarily. The first step is to extract $x ≈ \sqrt{n}$
-such elements. To make indexing easier, we round $x$ up to the nearest power of
-two. If the input does not have enough distinct elements, we are forced to
-round down instead.</p><h4 id=bᴜғexᴛʀᴀᴄᴛ><a class=heading-link href=#bᴜғexᴛʀᴀᴄᴛ>BᴜғExᴛʀᴀᴄᴛ</a></h4><p>How to find such elements? This is a stable sort, after all, so we cannot
+such elements. To make indexing easier, we round up to the nearest power of
+two. If there are not enough suitable elements, extract as many as possible
+(rounding down instead).</p><h4 id=bᴜғexᴛʀᴀᴄᴛ><a class=heading-link href=#bᴜғexᴛʀᴀᴄᴛ>BᴜғExᴛʀᴀᴄᴛ</a></h4><p>How to find such elements? This is a stable sort, after all, so we cannot
 permute elements at will. However, relative order only matters for elements
 that are equal. That means, if we extract a subset of elements such that</p><ul><li>No two elements in the subset are equal,</li><li>Each element in the subset appeared <em>before</em> any of its duplicates in the
 original input,</li></ul><p>we can shuffle that subset arbitrarily without compromising the stability of
-our sort. When merging it back into the input, we must remember to prefer
-elements from the internal buffer since they appeared first in the original
-input.</p><p>The first element in the input always fulfills the aforementioned criteria, so
+our sort. When merging the internal buffer back into the input, we must prefer
+elements from the buffer if there are duplicates, since they appeared first
+originally.</p><p>The first element in the input always fulfills the aforementioned criteria, so
 we begin with an internal buffer of length 1. The buffer must remain sorted
 throughout the process. BᴜғExᴛʀᴀᴄᴛ proceeds as follows until the buffer
 reaches the desired size:</p><ol><li>Search forward in the remaining elements of the input until you find an
@@ -181,7 +181,7 @@ block in the series. The next block is an $A$ block.</li><li>Compare the tail of
 tail of the current block is less than that of its predecessor, the current
 block is the first $B$ block in a $B$ block series.</li><li>Swap the head of the block from step 1 with the tail of the block from step 2.
 This undoes the swap from BʟᴏᴄᴋTᴀɢ and restores the original order.</li></ol><figure><img src=/images/grailsort/tag-block-untag.png alt="Untagging reconstructs the data from the movement imitation buffer and puts the input back in original order."><figcaption><p>Untagging reconstructs the data from the movement imitation buffer and puts the input back in original order.</p></figcaption></figure><p>Note that this scheme is unable to encode how many $A$ blocks are at the start
-and end of the block sequence. There&rsquo;s no preceding/succeeding $B$ block, so we
+and end of the run: there&rsquo;s no preceding (succeeding) $B$ block. We
 must pass this information out-of-band. Thankfully it is of constant size.</p><h4 id=bʟᴏᴄᴋmᴇʀɢᴇbᴜғ><a class=heading-link href=#bʟᴏᴄᴋmᴇʀɢᴇbᴜғ>BʟᴏᴄᴋMᴇʀɢᴇBᴜғ</a></h4><p>Once we have tagged the block sequence, we can repurpose the auxiliary buffer
 as an internal buffer for MᴇʀɢᴇBᴜғ. Recall that the left input to MᴇʀɢᴇBᴜғLᴇғᴛ
 can be arbitrarily large so long as the right input is no larger than the
@@ -201,7 +201,7 @@ go next. Like before, the internal buffer moves rightwards through the run until
 reaches the end.</p><h5 id=partial-blocks-1><a class=heading-link href=#partial-blocks-1>Partial Blocks</a></h5><p>As in Phase 1, we may have only a single run at the end of the input. In this
 case there is no merging to be done, and we can continue to the next value of
 $m$. We may also have a pair of runs where the length of the one on the right
-($B$) is not exactly $m$. In this case, the final $B$ block may have size less
+is not exactly $m$. In this case, the final $B$ block may have size less
 than $x$. We&rsquo;ll call it a partial block.</p><p>Trying to sort and tag the partial block would make it difficult to index any
 $A$ blocks that are ordered after it. Instead, we ignore it until all other
 blocks are merged. It is not subject to sorting or tagging. If the last series
@@ -237,7 +237,7 @@ We&rsquo;re going to add up all these iterations to compute the complexity of B�
 worst-case, while the right input is always exactly one block long and becomes
 becomes $\frac{m}{x}$. $|R_{\ne}|$ is bounded by $u$, the number of distinct
 elements in the input. However, distinct elements can be split across several
-block series, and so the same value may appear in the right sequence of a
+block series, meaning the same value can appear in the right sequence of a
 MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear
 in <strong>no more than four MᴇʀɢᴇNᴏBᴜғ operations</strong>, so we can substitute $u$ for
 $|R_{\ne}|$ when computing the total runtime across all iterations.</p><p>Why four? Since runs are sorted, all equal elements appear consecutively within
