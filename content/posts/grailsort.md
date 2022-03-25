@@ -390,7 +390,7 @@ correctly, I've illustrated the single block case below.
 
 #### BʟᴏᴄᴋUɴᴛᴀɢ
 
-To get an even better understanding of the BʟᴏᴄᴋTᴀɢ routine, let's see how
+To better understand the BʟᴏᴄᴋTᴀɢ routine, let's see how
 to extract the information it encoded. We'll do this incrementally by
 scanning linearly across the blocks. Assuming we start in a $B$ block series:
 
@@ -496,20 +496,19 @@ respectively.[^lr-confusion]
 
 Each BʟᴏᴄᴋMᴇʀɢᴇNᴏBᴜғ operates on a single pair of runs and may involve multiple
 invocations of MᴇʀɢᴇNᴏBᴜғ. A single element will be part of no more than two
-MᴇʀɢᴇNᴏBᴜғ invocations (once on the left, once on the right).  The left input
-to MᴇʀɢᴇNᴏBᴜғ may arbitrarily long, so $|L|$ becomes $m$ in the worst-case.
-However, the right input is always exactly one block long, so $|R|$ becomes
-$\frac{m}{x}$.
+MᴇʀɢᴇNᴏBᴜғ invocations (once on the left, once on the right). Recall that the
+factor $|R\_{\ne}|$—the number of distinct elements in the right sequence—is
+what determines the number of iterations through the inner loop of MᴇʀɢᴇNᴏBᴜғ.
+We're going to add up all these iterations to compute the complexity of BʟᴏᴄᴋMᴇʀɢᴇNᴏBᴜғ.
 
-The factor $|R\_{\ne}|$—the number of distinct elements in the right sequence—
-is more interesting. This is what determines the number of iterations through the
-inner loop of MᴇʀɢᴇNᴏBᴜғ.
-We know that the total number of distinct elements in either
-run is bounded by $u$. However, distinct elements can be split across several
+The left input to MᴇʀɢᴇNᴏBᴜғ may arbitrarily long, so $|L|$ becomes $m$ in the
+worst-case, while the right input is always exactly one block long and becomes
+becomes $\frac{m}{x}$. $|R\_{\ne}|$ is bounded by $u$, the number of distinct
+elements in the input. However, distinct elements can be split across several
 block series, and so the same value may appear in the right sequence of a
-MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear in
-**no more than four MᴇʀɢᴇNᴏBᴜғ operations**, so $|R\_{\ne}|$ can be replaced with
-$u$ when computing the total runtime for all operations.
+MᴇʀɢᴇNᴏBᴜғ operation multiple times. Thankfully, each distinct value may appear
+in **no more than four MᴇʀɢᴇNᴏBᴜғ operations**, so we can substitute $u$ for
+$|R\_{\ne}|$ when computing the total runtime across all iterations.
 
 Why four? Since runs are sorted, all equal elements appear consecutively within
 their run. Therefore, a single value can be present in exactly two settings:
@@ -560,8 +559,9 @@ The input is now sorted!
 
 ## Conclusion
 
-With that, we've finished our own holy sorting grail. I honestly find it pretty
-miraculous that this is even possible. It's a lot of work just to sort a list!
+With that, we've finished our own holy sorting grail. Honestly I find it
+miraculous that this is even possible. But it's a lot of work just to sort a
+list!
 
 I've called my implementation
 [MrrlSort](https://github.com/ecstatic-morse/MrrlSort) to pay tribute to Andrey
