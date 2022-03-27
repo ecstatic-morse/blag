@@ -646,5 +646,5 @@ figcaption > p {
 [first-blocksort]:  http://i.stanford.edu/pub/cstr/reports/cs/tr/74/470/CS-TR-74-470.pdf
 [rewritten-grailsort]:  https://github.com/HolyGrailSortProject/Rewritten-Grailsort
 [^first-blocksort]:  In a paper called ["Stable Sorting and Merging with Optimal Space and Time Bounds"][first-blocksort].
-[^practical-in-place]: See ["Practical In-Place Merging"](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.1155&rep=rep1&type=pdf).
+[^practical-in-place]: See ["Fast Stable Merging and Sorting in Constant Extra Space"](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.54.8381).
 
