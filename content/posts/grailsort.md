@@ -501,8 +501,8 @@ factor $|R\_{\ne}|$—the number of distinct elements in the right sequence—is
 what determines the number of iterations through the inner loop of MᴇʀɢᴇNᴏBᴜғ.
 We're going to add up all these iterations to compute the complexity of BʟᴏᴄᴋMᴇʀɢᴇNᴏBᴜғ.
 
-The left input to MᴇʀɢᴇNᴏBᴜғ may arbitrarily long, so $|L|$ becomes $m$ in the
-worst-case, while the right input is always exactly one block long and becomes
+The left input to MᴇʀɢᴇNᴏBᴜғ may be arbitrarily long, so $|L|$ becomes $m$ in the
+worst-case, while the right input is always exactly one block long and
 becomes $\frac{m}{x}$. $|R\_{\ne}|$ is bounded by $u$, the number of distinct
 elements in the input. However, distinct elements can be split across several
 block series, meaning the same value can appear in the right sequence of a
@@ -511,10 +511,10 @@ in **no more than four MᴇʀɢᴇNᴏBᴜғ operations**, so we can substitute 
 $|R\_{\ne}|$ when computing the total runtime across all iterations.
 
 Why four? Since runs are sorted, all equal elements appear consecutively within
-their run. Therefore, a single value can be present in exactly two settings:
+their run. Therefore, a single value can be present in two locations:
 
-- any number of consecutive blocks whose tail is equal to that value.
-- zero or one blocks whose tail is not equal to that value.
+- inside any number of consecutive blocks whose tail is equal to that value.
+- inside zero or one blocks whose tail is not equal to that value.
 
 BʟᴏᴄᴋRᴏʟʟ, because it is stable, keeps blocks from one run whose tails are
 equal together in a single series, so all blocks from the first case remain
